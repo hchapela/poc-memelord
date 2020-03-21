@@ -1,27 +1,23 @@
-var app = require('http').createServer(handler)
-var io = require('socket.io')(app);
-var fs = require('fs');
+var express = require('express');
+var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
-app.listen(3600);
+server.listen(8080);
 
+app.use('/public', express.static('public'));
 
-function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-      return res.end('Error loading index.html');
-    }
-
-    res.writeHead(200);
-    res.end(data);
-  });
-}
-
-io.on('connection', (socket) =>{
-  console.log('Connection..')
+//Route
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
-io.on('new_user', (socket) => {
-    
-})
+io.sockets.on('connection', (socket, pseudo) => {
+  // new user event
+  socket.on('new_user', (pseudo) => {
+      socket.pseudo = pseudo;
+      socket.broadcast.emit('new_user', pseudo);
+  });
+
+});
+
