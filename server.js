@@ -2,7 +2,7 @@ let express = require('express')
 let app = express()
 let server = require('http').Server(app)
 let io = require('socket.io')(server)
-import Game from './Game'
+import Game from './Controllers/Game'
 
 // Create party
 let party = new Game(io)
@@ -24,7 +24,6 @@ io.sockets.on('connection', (socket, pseudo) => {
   // new user event
   socket.on('new_user', (pseudo) => {
       socket.pseudo = pseudo
-      socket.broadcast.emit('new_user', pseudo)
 
       // If it's the first player => make him admin and create user
       if(!party.started) {
@@ -36,8 +35,9 @@ io.sockets.on('connection', (socket, pseudo) => {
       }
       // Update players list
       party.updatePlayers()
-      // Check if first user
-      party.isFirstPlayer()
+      // Send players number
+      socket.emit('player_number', party.players.length())
+
   });
 
   // If user disconnect, delete player
