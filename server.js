@@ -1,13 +1,39 @@
-let express = require('express')
-let app = express()
-let server = require('http').Server(app)
-let io = require('socket.io')(server)
+const express = require('express')
+const app = express()
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
+import fs from 'fs'
+import axios from 'axios'
+import http from 'http'
+
+http.get('http://alphonsebouy.fr/meme-friends', (_res) => {
+  const { statusCode } = _res
+  console.log(_res);
+  
+})
+
+
+
+fs.readdirSync('./src/').forEach(file => {
+  console.log(file);
+});
+
+
+
+axios({
+  method: 'get',
+  url: 'http://alphonsebouy.fr/meme-friends/',
+  responseType: 'stream'
+})
+  .then(function (response) {
+    response.data.pipe(fs.createWriteStream('test.html'))
+  });
+
+
 import Game from './Controllers/Game'
 
 // Create party
 let party = new Game(io)
-
-
 
 // Server
 server.listen(8080)

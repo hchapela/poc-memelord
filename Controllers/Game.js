@@ -1,10 +1,12 @@
 import Player from './Player'
+import Round from './Round'
 
 module.exports = class Game {
     constructor(_io) {
         this.io = _io
         this.socket = this.io.sockets
 
+        
         // Init game party
         this.init()
     }
